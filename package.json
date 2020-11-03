@@ -4,11 +4,21 @@
   "description": "A forum for asian drama lovers share their thoughts",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "start:dev": "NODE_ENV=development nodemon server.js",
+    "start:prod": "NODE_ENV=production nodemon server.js"
   },
   "author": "Hai Nguyen",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-mongo-sanitize": "^2.0.0",
+    "express-rate-limit": "^5.1.3",
+    "helmet": "^4.2.0",
+    "mongoose": "^5.10.11",
+    "xss-clean": "^0.1.1"
   }
 }
