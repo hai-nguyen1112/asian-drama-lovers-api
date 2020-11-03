@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
-const app = require('app');
+const app = require('./app');
 
 // This is to handle uncaught expection errors. We must place it on top of the server file.
 process.on('uncaughtException', (err) => {

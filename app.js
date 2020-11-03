@@ -7,6 +7,10 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const compression = require('compression');
 
+const AppError = require('./utils/AppError');
+const globalErrorHandler = require('./controllers/errorController');
+const userRouter = require('./routes/userRoutes');
+
 const app = express();
 
 // 1) Define global middlewares
@@ -53,7 +57,17 @@ app.use(xss());
 app.use(compression());
 
 // 2) Apply the routers
+app.use('/api/v1/users', userRouter);
 
 // 3) Global error handlind middlewares
+
+// This is to send back an error whenever there is a request made to an undefined route. We must put this middleware after defined routes.
+app.all('*', (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+  // Express will skip all middlewares in the middle and go straight to the global error handling middleware below
+});
+
+// This is the middleware that runs the globalErrorHandler. We must place this middleware at the bottom of the app.js file. Whenever the next function receives an error as an argument and gets called, this middleware will get called.
+app.use(globalErrorHandler);
 
 module.exports = app;
