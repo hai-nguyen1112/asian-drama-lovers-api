@@ -1,0 +1,14 @@
+{
+  "name": "asian-drama-lovers-api",
+  "version": "1.0.0",
+  "description": "A forum for asian drama lovers share their thoughts",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hai Nguyen",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
