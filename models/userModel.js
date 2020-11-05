@@ -7,12 +7,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Username is required!'],
       maxlength: [15, 'Username cannot be longer than 15 characters!'],
+      trim: true,
     },
     email: {
       type: String,
       required: [true, 'Email is required!'],
       unique: [true, 'Someone already registered with this email!'],
       lowercase: true,
+      trim: true,
       validate: [validator.isEmail, 'Invalid email!'],
     },
     password: {
@@ -53,8 +55,22 @@ const userSchema = new mongoose.Schema(
     passwordResetExpires: Date,
   },
   {
-    toJSON: { virtuals: true }, // This is to enable adding virtual fields to the resopnse
-    toObject: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id; // This is to not show _id in the response
+        delete ret.__v; // THis is to not show __v in the response
+      },
+    }, // This is to enable adding virtual fields to the resopnse
+    toObject: {
+      virtuals: true,
+      transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id; // This is to not show _id in the response
+        delete ret.__v; // THis is to not show __v in the response
+      },
+    },
   }
 );
 
