@@ -1,17 +1,25 @@
+const APIQueryFeatures = require('../utils/APIQueryFeatures');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 
 exports.getAll = (Model, populateOptions, selectOptions) =>
   catchAsync(async (req, res, next) => {
+    console.log(req.query);
     let query = Model.find({}, selectOptions);
+
+    const features = new APIQueryFeatures(query, req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
 
     if (populateOptions) {
       populateOptions.forEach((option) => {
-        query = query.populate(option);
+        features.query = features.query.populate(option);
       });
     }
 
-    const docs = await query;
+    const docs = await features.query;
 
     res.status(200).json({
       status: 'success',
