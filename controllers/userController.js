@@ -40,3 +40,5 @@ exports.updateUser = factory.updateOne(
   null,
   null
 );
+
+exports.deleteUser = factory.deleteOne(User);
