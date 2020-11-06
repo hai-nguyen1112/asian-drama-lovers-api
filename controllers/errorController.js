@@ -11,8 +11,21 @@ module.exports = (err, req, res, next) => {
     error.message = err.message;
 
     // Handle invalid database IDs
-    if (err.stack.startsWith('CastError')) {
+    if (err.stack && err.stack.startsWith('CastError')) {
       error = handleCastErrorDB(err);
+    }
+
+    // Handle validation errors
+    if (
+      (err._message && err._message.includes('validation')) ||
+      (err._message && err._message.includes('Validation'))
+    ) {
+      error = handleValidationErrorDB(err);
+    }
+
+    // Handle duplicated fields
+    if (err.code === 11000) {
+      error = handleDuplicateFieldsDB(err);
     }
 
     sendErrorProd(error, req, res);
@@ -79,4 +92,26 @@ const sendErrorProd = (err, req, res) => {
 
 const handleCastErrorDB = (err) => {
   return new AppError(`Invalid ${err.path}: ${err.value}`, 404);
+};
+
+const handleValidationErrorDB = (err) => {
+  const errMessages = Object.values(err.errors)
+    .map((error) => error.message)
+    .join(' ');
+  return new AppError(`Invalid input data. ${errMessages}`, 400);
+};
+
+const handleDuplicateFieldsDB = (err) => {
+  if (Object.keys(err.keyValue)[0] === 'email') {
+    return new AppError(
+      'This email aleady exists in the database. If you forgot your password, please reset password!',
+      400
+    );
+  }
+  return new AppError(
+    `Duplicate field value: [${Object.keys(err.keyValue)[0]}: ${
+      Object.values(err.keyValue)[0]
+    }]`,
+    400
+  );
 };

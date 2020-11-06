@@ -4,7 +4,6 @@ const catchAsync = require('../utils/catchAsync');
 
 exports.getAll = (Model, populateOptions, selectOptions) =>
   catchAsync(async (req, res, next) => {
-    console.log(req.query);
     let query = Model.find({}, selectOptions);
 
     const features = new APIQueryFeatures(query, req.query)
