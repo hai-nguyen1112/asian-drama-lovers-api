@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
   {
@@ -85,10 +86,28 @@ const userSchema = new mongoose.Schema(
 /* Virtual middlewares */
 /* End of virtual middlewares */
 
-/* Document middlewares */
+/* Document middlewares - The this keyword points to the currently processed document */
+// This is the middleware that is used to hash the password before saving it to the database
+userSchema.pre('save', async function (next) {
+  // If the password field is not modified, we do nothing
+  if (!this.isModified('password')) return next();
+
+  // Hash the password with the code of 12
+  this.password = await bcrypt.hash(this.password, 12);
+
+  // Get rid of passwordConfirm because we don't need to store it in the database
+  this.passwordConfirm = undefined;
+
+  next();
+});
 /* End of document middlewares */
 
-/* Query middlewares */
+/* Query middlewares - The this keyword points to the currently processed query */
+// This is the middleware that only select users with active as true
+userSchema.pre(/^find/, function (next) {
+  // this keyword points to the current query
+  this.find({ active: { $ne: false } });
+});
 /* End of query middlewares */
 
 /* Aggregation middlewares */
