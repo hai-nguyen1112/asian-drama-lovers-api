@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const compression = require('compression');
+const cors = require('cors');
 
 const AppError = require('./utils/AppError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -14,6 +15,16 @@ const userRouter = require('./routes/userRoutes');
 const app = express();
 
 // 1) Define global middlewares
+// Implement CORS
+app.use(cors()); // set Access-Control-Allow-Origin to everything
+// backend: asian-drama-lovers-api.com, front-end: asian-drama-lovers.com
+// app.use(cors({ origin: 'https://asian-drama-lovers.com' })) // This is to allow Access-Control-Allow-Origin to only the front-end asian-drama-lovers.com
+
+// This is to allow pre-flight for all routes
+app.options('*', cors());
+// This is to allow pre-flight for only a specific route
+// app.options('/api/v1/users/:id', cors());
+
 // This is a middleware that allows the app to serve static files stored in public folder
 app.use(express.static(path.join(__dirname, 'public')));
 

@@ -100,6 +100,27 @@ userSchema.pre('save', async function (next) {
 
   next();
 });
+
+// This is an instance method which is available for every document of the User collection
+userSchema.methods.comparePassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+// This is an instance method which is availabe for every document of the User collection
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  return false;
+};
 /* End of document middlewares */
 
 /* Query middlewares - The this keyword points to the currently processed query */
@@ -107,6 +128,7 @@ userSchema.pre('save', async function (next) {
 userSchema.pre(/^find/, function (next) {
   // this keyword points to the current query
   this.find({ active: { $ne: false } });
+  next();
 });
 /* End of query middlewares */
 

@@ -28,6 +28,15 @@ module.exports = (err, req, res, next) => {
       error = handleDuplicateFieldsDB(err);
     }
 
+    // Handle JWT errors
+    if (err.name === 'JsonWebTokenError') {
+      error = handleJWTError();
+    }
+
+    if (err.name === 'TokenExpiredError') {
+      error = handleJWTExpiredError();
+    }
+
     sendErrorProd(error, req, res);
   }
 };
@@ -114,4 +123,12 @@ const handleDuplicateFieldsDB = (err) => {
     }]`,
     400
   );
+};
+
+const handleJWTError = () => {
+  return new AppError('Invalid token. Please log in again!', 401);
+};
+
+const handleJWTExpiredError = () => {
+  return new AppError('Your token has expired. Please log in again!', 401);
 };
