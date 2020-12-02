@@ -24,7 +24,14 @@ exports.signup = catchAsync(async (req, res, next) => {
     );
   }
 
-  createSendToken(newUser, 201, req, res);
+  const userObject = {};
+  userObject['id'] = newUser.id;
+  userObject['username'] = newUser.username;
+  userObject['email'] = newUser.email;
+  userObject['role'] = newUser.role;
+  userObject['photo'] = newUser.photo;
+
+  createSendToken(userObject, 201, req, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
